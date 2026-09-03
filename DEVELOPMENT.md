@@ -69,7 +69,7 @@ nest g decorator user
 ## Generate interceptor
 
 ```bash
-nest g interceptor user
+nest g interceptor utils/transform --flat
 ```
 
 ## Generate exception
@@ -95,7 +95,7 @@ nest new user
 ```bash
 nest g library user
 ```
-
+~
 ## Generate configuration
 
 ```bash
@@ -121,3 +121,4 @@ nest g microservice user
 ```
 
 ## Generate message handler
+
