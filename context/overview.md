@@ -9,10 +9,19 @@ We will have an admin interface and a user interface.
 ## Admin interface
 
 The admin interface will be used to create and manage events.
+Admin create events.
 
 ## User interface
 
 The user interface will be used to view events and register for them.
+Users join events.
+
+## More
+
+There are roles, permissions, and workflows.
+Uses Arcjet for security.
+Prisma Postgres for the database.
+Better-auth for sessions.
 
 ## Features
 

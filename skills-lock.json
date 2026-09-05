@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "arcjet": {
+      "source": "arcjet/skills",
+      "sourceType": "github",
+      "skillPath": "arcjet/SKILL.md",
+      "computedHash": "f2054e61fab0c62653d20a21b6ce005315643e17543e40cfa59b9c46fa78373a"
+    },
     "codebase-design": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -24,6 +30,12 @@
       "sourceType": "github",
       "skillPath": "skills/engineering/implement/SKILL.md",
       "computedHash": "2139cfedf24791adbc839aaab6019cff158af1e28bfead020ec6e0ce01b3e74d"
+    },
+    "integrate-arcjet-guard-claude-agent-sdk-py": {
+      "source": "arcjet/skills",
+      "sourceType": "github",
+      "skillPath": "integrate-arcjet-guard-claude-agent-sdk-py/SKILL.md",
+      "computedHash": "219053bc9a19c5bec7029fa97e8282e839e7924e1343536db9b0e5f9b7607565"
     },
     "nestjs-best-practices": {
       "source": "kadajett/agent-nestjs-skills",

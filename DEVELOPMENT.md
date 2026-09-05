@@ -51,13 +51,13 @@ nest g pipe user
 ## Generate guard
 
 ```bash
-nest g guard user
+nest g guard guards/role --flat
 ```
 
 ## Generate middleware
 
 ```bash
-nest g middleware user
+nest g middleware middleware/api-key --flat
 ```
 
 ## Generate decorator
@@ -120,5 +120,8 @@ nest g gateway user
 nest g microservice user
 ```
 
-## Generate message handler
 
+
+## Project notes
+
+- Arcjet  - prevents SQL injection, cross-site scripting, rate-limiting, and other attacks.
