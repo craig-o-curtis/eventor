@@ -1,2 +1,6 @@
+allowBuilds:
+  esbuild: false
+  msgpackr-extract: false
+  workerd: false
 minimumReleaseAgeExclude:
   - '@northguild/gmt@1.15.0'
