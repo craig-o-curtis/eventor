@@ -63,6 +63,7 @@
       "*"
     ]
   },
+  "packageManager": "pnpm@11.25.0",
   "pnpm": {
     "overrides": {
       "@effect/platform-bun": "4.0.0-rc.112",
