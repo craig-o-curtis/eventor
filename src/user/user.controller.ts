@@ -9,17 +9,12 @@ import {
   Put,
   Delete,
   UseGuards,
-  Req,
-  HttpException,
-  HttpStatus,
-  Inject,
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserService } from "./user.service";
 import { RoleGuard } from "../guards/role.guard";
-import { ARCJET, ArcjetNest, slidingWindow, detectBot, validateEmail } from "@arcjet/nest";
-import type { Request } from "express";
+import { slidingWindow, detectBot, validateEmail, WithArcjetRules } from "@arcjet/nest";
 
 const rateLimitRule = slidingWindow({
   mode: "DRY_RUN",
@@ -39,113 +34,42 @@ const emailRule = validateEmail({
 
 @Controller("user")
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    @Inject(ARCJET) private readonly arcjet: ArcjetNest,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   // GET /user
   @Get()
-  async getUsers(@Req() req: Request, @Query("name") name: string) {
-    const protect = this.arcjet.withRule(rateLimitRule).withRule(botRule);
-    const decision = await protect.protect(req, {});
-
-    if (decision.isDenied()) {
-      if (decision.reason.isRateLimit()) {
-        throw new HttpException("Rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
-      }
-      if (decision.reason.isBot()) {
-        throw new HttpException("No bots allowed", HttpStatus.FORBIDDEN);
-      }
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
-
+  getUsers(@Query("name") name: string) {
     return this.userService.findAllUsers(name);
   }
 
   // GET /user/:id
   @Get(":id")
-  async getUserById(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-    const protect = this.arcjet.withRule(rateLimitRule).withRule(botRule);
-    const decision = await protect.protect(req, {});
-
-    if (decision.isDenied()) {
-      if (decision.reason.isRateLimit()) {
-        throw new HttpException("Rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
-      }
-      if (decision.reason.isBot()) {
-        throw new HttpException("No bots allowed", HttpStatus.FORBIDDEN);
-      }
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
-
+  getUserById(@Param("id", ParseIntPipe) id: number) {
     return this.userService.findUserById(id);
   }
 
   // POST /user
   @Post()
   @UseGuards(RoleGuard)
-  async createUser(@Req() req: Request, @Body() createUserDto: CreateUserDto) {
-    const protect = this.arcjet.withRule(rateLimitRule).withRule(botRule).withRule(emailRule);
-    const decision = await protect.protect(req, { email: createUserDto.email });
-
-    if (decision.isDenied()) {
-      if (decision.reason.isRateLimit()) {
-        throw new HttpException("Rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
-      }
-      if (decision.reason.isBot()) {
-        throw new HttpException("No bots allowed", HttpStatus.FORBIDDEN);
-      }
-      if (decision.reason.isEmail()) {
-        throw new HttpException("Invalid or disallowed email", HttpStatus.BAD_REQUEST);
-      }
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
-
+  @WithArcjetRules([emailRule])
+  createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
   // PUT /user/:id
   @Put(":id")
   @UseGuards(RoleGuard)
-  async updateUser(
-    @Req() req: Request,
+  updateUser(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const protect = this.arcjet.withRule(rateLimitRule).withRule(botRule);
-    const decision = await protect.protect(req, {});
-
-    if (decision.isDenied()) {
-      if (decision.reason.isRateLimit()) {
-        throw new HttpException("Rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
-      }
-      if (decision.reason.isBot()) {
-        throw new HttpException("No bots allowed", HttpStatus.FORBIDDEN);
-      }
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
-
     return this.userService.updateUser(id, updateUserDto);
   }
 
   // DELETE
   @Delete(":id")
   @UseGuards(RoleGuard)
-  async deleteUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-    const protect = this.arcjet.withRule(rateLimitRule).withRule(botRule);
-    const decision = await protect.protect(req, {});
-
-    if (decision.isDenied()) {
-      if (decision.reason.isRateLimit()) {
-        throw new HttpException("Rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
-      }
-      if (decision.reason.isBot()) {
-        throw new HttpException("No bots allowed", HttpStatus.FORBIDDEN);
-      }
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
-
+  deleteUser(@Param("id", ParseIntPipe) id: number) {
     return this.userService.deleteUser(id);
   }
 }

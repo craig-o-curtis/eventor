@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - '@northguild/gmt@1.15.0'

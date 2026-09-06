@@ -27,8 +27,8 @@ importers:
         specifier: ^12.0.1
         version: 12.0.1(@nestjs/common@12.0.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.0.1)(supports-color@7.2.0)
       '@northguild/gmt':
-        specifier: ^1.14.2
-        version: 1.14.2
+        specifier: ^1.15.0
+        version: 1.15.0
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -512,8 +512,8 @@ packages:
     peerDependencies:
       oxlint: '>=1.0.0'
 
-  '@northguild/gmt@1.14.2':
-    resolution: {integrity: sha512-zyTOO7QPaqaQqszUXcsZs4HBXoAO4rFwnc8iOuCce904xeJHVblLSwvojagjzDpJW/BRe1uzE8foE+UfCLL9qQ==}
+  '@northguild/gmt@1.15.0':
+    resolution: {integrity: sha512-W7Mysu85iiK89VMEeLlwSAWQGb3SxrkPOQurkMhHLtvACjsgz9leCD1Mfj7dmum3BULvyjROu8lrQZDQBAUdhQ==}
 
   '@oxc-project/types@0.147.0':
     resolution: {integrity: sha512-IJ3s6ltHLp45S0bh7phkX+gJO7A1Wuz2EaqpAhb8WjqDwbzMiWKHhyyT42tskaWjEYXtHtVCPpnBJVT9+dcRLg==}
@@ -2560,7 +2560,7 @@ snapshots:
     dependencies:
       oxlint: 1.81.0
 
-  '@northguild/gmt@1.14.2':
+  '@northguild/gmt@1.15.0':
     dependencies:
       '@js-temporal/polyfill': 0.5.1
 
