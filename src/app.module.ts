@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { UserModule } from "./user/user.module";
-import { ArcjetModule, shield } from "@arcjet/nest";
+import { ArcjetModule, shield, fixedWindow } from "@arcjet/nest";
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { ArcjetModule, shield } from "@arcjet/nest";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         key: config.get<string>("ARCJET_KEY")!,
-        rules: [shield({ mode: "LIVE" })],
+        rules: [shield({ mode: "LIVE" }), fixedWindow({ mode: "LIVE", window: "60s", max: 100 })],
       }),
     }),
   ],

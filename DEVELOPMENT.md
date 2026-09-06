@@ -109,7 +109,7 @@ export class UserController {
 
   @Get()
   async getUsers(@Req() req: Request) {
-    const protect = this.arcjet.withRule(rateLimitRule).withRule(botRule);
+    const protect = this.arcjet.withRule([rateLimitRule, botRule] as any);
     const decision = await protect.protect(req, {});
 
     if (decision.isDenied()) {
