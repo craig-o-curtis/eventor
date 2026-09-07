@@ -29,8 +29,12 @@
     "@nestjs/mapped-types": "^12.0.0",
     "@nestjs/platform-express": "^12.0.1",
     "@northguild/gmt": "^1.15.0",
+    "@prisma/composer": "0.16.0",
+    "@prisma/composer-prisma-cloud": "0.16.0",
+    "alchemy": "2.0.0-beta.74",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "effect": "4.0.0-rc.112",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
@@ -47,6 +51,7 @@
     "oxfmt": "~0.66.0",
     "oxlint": "^1.81.0",
     "prettier": "^3.4.2",
+    "prisma": "8.0.0-rc.12",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "typescript": "^6.0.2",
@@ -57,5 +62,17 @@
     "skills": [
       "*"
     ]
+  },
+  "packageManager": "pnpm@11.25.0",
+  "pnpm": {
+    "overrides": {
+      "@effect/platform-bun": "4.0.0-rc.112",
+      "@effect/platform-node": "4.0.0-rc.112",
+      "@effect/platform-node-shared": "4.0.0-rc.112",
+      "@effect/sql-d1": "4.0.0-rc.112",
+      "@effect/sql-pg": "4.0.0-rc.112",
+      "@effect/vitest": "4.0.0-rc.112",
+      "effect": "4.0.0-rc.112"
+    }
   }
 }
