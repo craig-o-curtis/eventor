@@ -1,5 +1,6 @@
 {
   "name": "eventer",
+  "type": "module",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -19,7 +20,15 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
-    "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
+    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+    "prisma:init": "npx prisma orm init --target postgres --authoring psl",
+    "prisma:contract:infer": "prisma contract infer --output ./src/prisma/contract.prisma",
+    "prisma:contract:emit": "prisma contract emit",
+    "prisma:db:sign": "prisma db sign",
+    "prisma:migration:new": "npx prisma migration new",
+    "prisma:db:migrate": "npx prisma db migrate",
+    "prisma:db:init": "npx prisma db init",
+    "db:seed": "nest build && node dist/prisma/seed.js"
   },
   "dependencies": {
     "@arcjet/nest": "^1.11.0",
@@ -31,10 +40,13 @@
     "@northguild/gmt": "^1.15.0",
     "@prisma/composer": "0.16.0",
     "@prisma/composer-prisma-cloud": "0.16.0",
+    "@prisma/orm-postgres": "8.0.0-rc.8",
     "alchemy": "2.0.0-beta.74",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "dotenv": "^17.4.2",
     "effect": "4.0.0-rc.112",
+    "pg": "^8.23.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
@@ -44,8 +56,11 @@
     "@nestjs/schematics": "^12.0.0",
     "@nestjs/testing": "^12.0.1",
     "@northguild/gmt-oxlint": "^1.1.5",
+    "@prisma/cli-engine": "0.3.0",
+    "@prisma/orm-framework": "8.0.0-rc.8",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^7.0.0",
     "@vitest/coverage-v8": "^4.1.2",
     "oxfmt": "~0.66.0",
@@ -63,16 +78,5 @@
       "*"
     ]
   },
-  "packageManager": "pnpm@11.25.0",
-  "pnpm": {
-    "overrides": {
-      "@effect/platform-bun": "4.0.0-rc.112",
-      "@effect/platform-node": "4.0.0-rc.112",
-      "@effect/platform-node-shared": "4.0.0-rc.112",
-      "@effect/sql-d1": "4.0.0-rc.112",
-      "@effect/sql-pg": "4.0.0-rc.112",
-      "@effect/vitest": "4.0.0-rc.112",
-      "effect": "4.0.0-rc.112"
-    }
-  }
+  "packageManager": "pnpm@11.25.0"
 }

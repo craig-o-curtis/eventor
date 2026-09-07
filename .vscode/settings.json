@@ -1,0 +1,9 @@
+{
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "oxc.fmt.configPath": ".oxfmtrc.json",
+  "oxc.path.oxfmt": "node_modules/.bin/oxfmt",
+  "oxc.path.oxlint": "node_modules/.bin/oxlint",
+  "oxc.lint.run": "onSave"
+}
