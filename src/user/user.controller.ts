@@ -10,19 +10,19 @@ import {
   Delete,
   UseGuards,
 } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { UserService } from "./user.service";
-import { RoleGuard } from "../guards/role.guard";
+import { CreateUserDto } from "./dto/create-user.dto.js";
+import { UpdateUserDto } from "./dto/update-user.dto.js";
+import { UserService } from "./user.service.js";
+import { RoleGuard } from "../guards/role.guard.js";
 import { slidingWindow, detectBot, validateEmail, WithArcjetRules } from "@arcjet/nest";
 
-const rateLimitRule = slidingWindow({
+const _rateLimitRule = slidingWindow({
   mode: "DRY_RUN",
   interval: 60,
   max: 100,
 });
 
-const botRule = detectBot({
+const _botRule = detectBot({
   mode: "DRY_RUN",
   allow: [],
 });
@@ -60,7 +60,8 @@ export class UserController {
   @Put(":id")
   @UseGuards(RoleGuard)
   updateUser(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseIntPipe)
+    id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.userService.updateUser(id, updateUserDto);

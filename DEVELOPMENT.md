@@ -1,45 +1,94 @@
 # Development Cheatsheet
 
-## Generate module
+## Running the app
 
 ```bash
-nest g module user
+pnpm start:dev      # watch mode (recompiles + restarts on change)
+pnpm start          # run once
+pnpm start:prod     # node dist/main.js (requires a prior `pnpm build`)
+pnpm build          # nest build -> dist/
+pnpm test           # vitest run
+pnpm test:e2e       # vitest run --config ./vitest.config.e2e.ts
+pnpm lint           # oxlint
+pnpm typecheck      # tsc --noEmit
 ```
 
-## Generate controller
+> ESM note: this project is `"type": "module"` with `moduleResolution: nodenext`.
+> Relative imports **must** carry the emitted `.js` extension
+> (`import { AppModule } from "./app.module.js"`). The `migrations/` folder is
+> excluded from `tsconfig.json` because Prisma owns those files.
+
+## Prisma / Database
+
+The project uses **Prisma Next** (`@prisma/orm-postgres` v8) against a **Prisma
+Postgres** database. There is no generated client package — the query client is
+built at runtime from the compiled contract.
+
+| File | Purpose |
+| --- | --- |
+| [`src/prisma/contract.prisma`](src/prisma/contract.prisma) | Data contract — the source of truth for models |
+| [`src/prisma/contract.json`](src/prisma/contract.json) | Compiled contract (generated, committed) |
+| [`src/prisma/contract.d.ts`](src/prisma/contract.d.ts) | Contract types for the editor (generated, committed) |
+| [`src/prisma/db.ts`](src/prisma/db.ts) | The `db` client — `db.orm.public.User…` |
+| [`src/lib/database/prisma.service.ts`](src/lib/database/prisma.service.ts) | Nest wrapper (`PrismaService.db`), closes the pool on shutdown |
+| [`prisma.config.ts`](prisma.config.ts) | CLI config (contract path + `DATABASE_URL`) |
+| [`migrations/`](migrations/) | On-disk migration packages (Prisma-generated) |
+
+### Connection behaviour
+
+The app does **not** connect to the database on boot. `db.ts` builds a lazy
+`pg.Pool`; the first actual query opens the first connection. A bad
+`DATABASE_URL` therefore fails on the first request, not at startup. Add an
+`OnModuleInit` `select 1` to `PrismaService` if you want fail-fast.
+
+### Schema change workflow
+
+1. Edit [`src/prisma/contract.prisma`](src/prisma/contract.prisma).
+2. `pnpm prisma:contract:emit` — regenerate `contract.json` + `contract.d.ts`.
+3. `npx prisma migration plan` — scaffold a migration from the contract diff.
+4. `npx prisma db migrate` — apply pending migrations to the database.
+5. `npx prisma db verify` — confirm the live schema matches the contract.
+
+Other useful commands:
 
 ```bash
-nest g controller user
+pnpm prisma:contract:infer      # regenerate contract.prisma from an existing DB
+npx prisma db schema            # inspect the live database schema
+npx prisma migration status     # show migration path / pending state
+npx prisma migration log        # show applied migration history
+npx prisma db update            # push the contract to the DB without a migration file (dev only)
 ```
 
-## Generate service
+### Seeding an admin user
+
+Routes behind [`RoleGuard`](src/guards/role.guard.ts) require a user whose
+`role` is `ADMIN`. `role` defaults to `USER` and nothing else grants ADMIN, so a
+fresh database has no way past the guard until an admin exists.
 
 ```bash
-nest g service user
+# set ADMIN_EMAIL (and optionally ADMIN_NAME) in .env first
+pnpm db:seed
 ```
 
-## Generate resource
+`db:seed` runs [`src/prisma/seed.ts`](src/prisma/seed.ts) (compiled to
+`dist/prisma/seed.js`). It is **idempotent** — an `upsert` on `email` — so it is
+safe to run on every environment and re-run any time. It creates the admin if
+missing and promotes an existing user with that email to `ADMIN`; it does not
+overwrite the name on re-run.
+
+## NestJS generators
 
 ```bash
-nest g resource user
-```
-
-## Generate class
-
-```bash
-nest g class user
-```
-
-## Generate interface
-
-```bash
-nest g interface user
-```
-
-## Generate filter
-
-```bash
-nest g filter user
+nest g module <name>
+nest g controller <name>
+nest g service <name>
+nest g resource <name>                     # module + controller + service + DTOs
+nest g guard guards/<name> --flat
+nest g middleware middleware/<name> --flat
+nest g interceptor utils/<name> --flat
+nest g decorator common/decorators/<name> --flat
+nest g filter common/filters/<name> --flat
+nest g pipe <name>
 ```
 
 ## Arcjet Security Integration
@@ -154,86 +203,6 @@ npx -y @arcjet/cli@latest requests list --site-id site_01m1nzjnaxfe59emsz8v9tpds
 
 > If endpoints return "Invalid API Key" before reaching Arcjet, check that middleware (e.g., `ApiKeyMiddleware`) isn't blocking requests before they reach the controller.
 
-## Generate pipe
-
-```bash
-nest g pipe user
-```
-
-## Generate guard
-
-```bash
-nest g guard guards/role --flat
-```
-
-## Generate middleware
-
-```bash
-nest g middleware middleware/api-key --flat
-```
-
-## Generate decorator
-
-```bash
-nest g decorator user
-```
-
-## Generate interceptor
-
-```bash
-nest g interceptor utils/transform --flat
-```
-
-## Generate exception
-
-```bash
-nest g exception user
-```
-
-## Generate library
-
-```bash
-nest g library user
-```
-
-## Generate application
-
-```bash
-nest new user
-```
-
-## Generate library
-
-```bash
-nest g library user
-```
-~
-## Generate configuration
-
-```bash
-nest g config user
-```
-
-## Generate provider
-
-```bash
-nest g provider user
-```
-
-## Generate gateway
-
-```bash
-nest g gateway user
-```
-
-## Generate microservice
-
-```bash
-nest g microservice user
-```
-
-
-
 ## Project notes
 
-- Arcjet  - prevents SQL injection, cross-site scripting, rate-limiting, and other attacks.
+- Arcjet — prevents SQL injection, cross-site scripting, rate-limiting, and other attacks.

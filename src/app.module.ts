@@ -1,17 +1,18 @@
 import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-import { UserModule } from "./user/user.module";
+import { AppController } from "./app.controller.js";
+import { AppService } from "./app.service.js";
+import { UserModule } from "./user/user.module.js";
+import { PrismaModule } from "./lib/database/prisma.module.js";
 import { ArcjetGuard, ArcjetModule, shield, fixedWindow } from "@arcjet/nest";
-
 
 // Example test rate limiting:
 // repeat 60 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
     UserModule,
     ArcjetModule.forRootAsync({
       isGlobal: true,
