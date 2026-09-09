@@ -5,6 +5,8 @@ import { AppController } from "./app.controller.js";
 import { AppService } from "./app.service.js";
 import { UserModule } from "./user/user.module.js";
 import { PrismaModule } from "./lib/database/prisma.module.js";
+import { AuthModule } from "@thallesp/nestjs-better-auth";
+import { auth } from "./lib/auth/auth.js";
 import { ArcjetGuard, ArcjetModule, shield, fixedWindow } from "@arcjet/nest";
 
 // Example test rate limiting:
@@ -14,6 +16,9 @@ import { ArcjetGuard, ArcjetModule, shield, fixedWindow } from "@arcjet/nest";
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     UserModule,
+    AuthModule.forRoot({
+      auth,
+    }),
     ArcjetModule.forRootAsync({
       isGlobal: true,
       inject: [ConfigService],

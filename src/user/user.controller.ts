@@ -8,21 +8,21 @@ import {
   Post,
   Put,
   Delete,
-  UseGuards,
 } from "@nestjs/common";
+import { AllowAnonymous, Roles } from "@thallesp/nestjs-better-auth";
 import { CreateUserDto } from "./dto/create-user.dto.js";
 import { UpdateUserDto } from "./dto/update-user.dto.js";
 import { UserService } from "./user.service.js";
-import { RoleGuard } from "../guards/role.guard.js";
 import { slidingWindow, detectBot, validateEmail, WithArcjetRules } from "@arcjet/nest";
+import { ROLE } from "../common/constants/roles.js";
 
-const _rateLimitRule = slidingWindow({
+const rateLimitRule = slidingWindow({
   mode: "DRY_RUN",
   interval: 60,
   max: 100,
 });
 
-const _botRule = detectBot({
+const botRule = detectBot({
   mode: "DRY_RUN",
   allow: [],
 });
@@ -38,27 +38,29 @@ export class UserController {
 
   // GET /user
   @Get()
+  @AllowAnonymous()
   getUsers(@Query("name") name: string) {
     return this.userService.findAllUsers(name);
   }
 
   // GET /user/:id
   @Get(":id")
+  @AllowAnonymous()
   getUserById(@Param("id", ParseIntPipe) id: number) {
     return this.userService.findUserById(id);
   }
 
   // POST /user
   @Post()
-  @UseGuards(RoleGuard)
-  @WithArcjetRules([emailRule])
+  @Roles([ROLE.ADMIN])
+  @WithArcjetRules([rateLimitRule, botRule, emailRule])
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
   // PUT /user/:id
   @Put(":id")
-  @UseGuards(RoleGuard)
+  @Roles([ROLE.ADMIN])
   updateUser(
     @Param("id", ParseIntPipe)
     id: number,
@@ -69,7 +71,7 @@ export class UserController {
 
   // DELETE
   @Delete(":id")
-  @UseGuards(RoleGuard)
+  @Roles([ROLE.ADMIN])
   deleteUser(@Param("id", ParseIntPipe) id: number) {
     return this.userService.deleteUser(id);
   }

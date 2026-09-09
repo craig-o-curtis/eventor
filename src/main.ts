@@ -5,7 +5,9 @@ import { ValidationPipe } from "@nestjs/common";
 import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter.js";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+  });
 
   // pipes happen before a controller
   app.useGlobalPipes(new ValidationPipe());

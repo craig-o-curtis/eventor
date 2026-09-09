@@ -12,4 +12,52 @@ model User {
   role      UserRole        @default(USER)
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
+  sessions  Session[]
+  accounts  Account[]
+}
+
+model Session {
+  id        String   @id
+  token     String   @unique
+  expiresAt TimestamptzString
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  userAgent String?
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@map("session")
+}
+
+model Account {
+  id                    String   @id
+  issuer                String
+  accountId             String
+  providerId            String
+  userId                Int
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  TimestamptzString?
+  refreshTokenExpiresAt TimestamptzString?
+  scope                 String?
+  password              String?
+  createdAt             TimestamptzString @default(now())
+  updatedAt             temporal.updatedAtString()
+
+  @@unique([issuer, accountId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  TimestamptzString
+  createdAt  TimestamptzString @default(now())
+  updatedAt  temporal.updatedAtString()
+
+  @@map("verification")
 }
