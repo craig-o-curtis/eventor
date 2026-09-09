@@ -1,12 +1,15 @@
 <!-- intent-skills:start -->
+
 ## Skill Loading
 
 Before editing files for a substantial task:
+
 - Run `pnpm dlx @tanstack/intent@latest list` from the workspace root to see available local skills.
 - If a listed skill matches the task, run `pnpm dlx @tanstack/intent@latest load <package>#<skill>` before changing files.
 - Use the loaded `SKILL.md` guidance while making the change.
 - Monorepos: when working across packages, run the skill check from the workspace root and prefer the local skill for the package being changed.
 - Multiple matches: prefer the most specific local skill for the package or concern you are changing; load additional skills only when the task spans multiple packages or concerns.
+
 <!-- intent-skills:end -->
 
 # Eventer — Agent Guide
@@ -24,6 +27,8 @@ patterns and architecture decisions, not generic Node.js approaches.
 
 ## Code standards
 
+- You are using Prisma 8 which is different from previous versions. Ensure you use ctx7 if you
+  are touching Prisma-related code.
 - Never instantiate services directly (no `new PrismaClient()`,
   no `new SomeService()`) — always use constructor injection
 - Every infrastructure integration gets its own module and service:

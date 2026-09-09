@@ -1,4 +1,5 @@
 import { IsEmail, IsOptional, IsString } from "class-validator";
+import { ROLE, type Role } from "../../common/constants/roles.js";
 
 export class CreateUserDto {
   @IsEmail()
@@ -8,5 +9,5 @@ export class CreateUserDto {
   name: string;
 
   @IsOptional()
-  role?: "USER" | "ADMIN" = "USER";
+  role?: Role = ROLE.USER;
 }

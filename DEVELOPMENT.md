@@ -24,15 +24,15 @@ The project uses **Prisma Next** (`@prisma/orm-postgres` v8) against a **Prisma
 Postgres** database. There is no generated client package — the query client is
 built at runtime from the compiled contract.
 
-| File | Purpose |
-| --- | --- |
-| [`src/prisma/contract.prisma`](src/prisma/contract.prisma) | Data contract — the source of truth for models |
-| [`src/prisma/contract.json`](src/prisma/contract.json) | Compiled contract (generated, committed) |
-| [`src/prisma/contract.d.ts`](src/prisma/contract.d.ts) | Contract types for the editor (generated, committed) |
-| [`src/prisma/db.ts`](src/prisma/db.ts) | The `db` client — `db.orm.public.User…` |
+| File                                                                       | Purpose                                                        |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [`src/prisma/contract.prisma`](src/prisma/contract.prisma)                 | Data contract — the source of truth for models                 |
+| [`src/prisma/contract.json`](src/prisma/contract.json)                     | Compiled contract (generated, committed)                       |
+| [`src/prisma/contract.d.ts`](src/prisma/contract.d.ts)                     | Contract types for the editor (generated, committed)           |
+| [`src/prisma/db.ts`](src/prisma/db.ts)                                     | The `db` client — `db.orm.public.User…`                        |
 | [`src/lib/database/prisma.service.ts`](src/lib/database/prisma.service.ts) | Nest wrapper (`PrismaService.db`), closes the pool on shutdown |
-| [`prisma.config.ts`](prisma.config.ts) | CLI config (contract path + `DATABASE_URL`) |
-| [`migrations/`](migrations/) | On-disk migration packages (Prisma-generated) |
+| [`prisma.config.ts`](prisma.config.ts)                                     | CLI config (contract path + `DATABASE_URL`)                    |
+| [`migrations/`](migrations/)                                               | On-disk migration packages (Prisma-generated)                  |
 
 ### Connection behaviour
 
@@ -61,20 +61,24 @@ npx prisma db update            # push the contract to the DB without a migratio
 
 ### Seeding an admin user
 
-Routes behind [`RoleGuard`](src/guards/role.guard.ts) require a user whose
-`role` is `ADMIN`. `role` defaults to `USER` and nothing else grants ADMIN, so a
-fresh database has no way past the guard until an admin exists.
+Routes decorated with `@Roles([ROLE.ADMIN])` (role literals from
+[`src/common/constants/roles.ts`](src/common/constants/roles.ts), the decorator
+itself from `@thallesp/nestjs-better-auth`) require a user whose `role` is
+`ADMIN`. `role` defaults to `USER` and nothing else grants ADMIN, so a fresh
+database has no way past those routes until an admin exists.
 
 ```bash
-# set ADMIN_EMAIL (and optionally ADMIN_NAME) in .env first
+# set ADMIN_EMAIL, ADMIN_NAME, and ADMIN_PASSWORD in .env first
 pnpm db:seed
 ```
 
 `db:seed` runs [`src/prisma/seed.ts`](src/prisma/seed.ts) (compiled to
-`dist/prisma/seed.js`). It is **idempotent** — an `upsert` on `email` — so it is
-safe to run on every environment and re-run any time. It creates the admin if
-missing and promotes an existing user with that email to `ADMIN`; it does not
-overwrite the name on re-run.
+`dist/prisma/seed.js`). It is **idempotent** and safe to re-run on every
+environment. If no user exists with `ADMIN_EMAIL`, it creates one through
+Better Auth's real sign-up flow (`auth.api.signUpEmail`) so the account has a
+proper hashed password and can actually sign in — `ADMIN_PASSWORD` is only
+required the first time. Either way, it then promotes that user's `role` to
+`ADMIN`.
 
 ## NestJS generators
 
@@ -183,6 +187,7 @@ export class UserController {
 ```
 
 Key points:
+
 - Use `@Inject(ARCJET)` to inject the Arcjet instance (not `new ArcjetNest()`)
 - Chain rules with `.withRule()` — each rule is evaluated
 - `protect(req, properties)` requires a second argument: `{}` for routes without email validation, `{ email: ... }` when using `validateEmail`
@@ -201,8 +206,14 @@ curl http://localhost:3000/user
 npx -y @arcjet/cli@latest requests list --site-id site_01m1nzjnaxfe59emsz8v9tpds3
 ```
 
-> If endpoints return "Invalid API Key" before reaching Arcjet, check that middleware (e.g., `ApiKeyMiddleware`) isn't blocking requests before they reach the controller.
-
 ## Project notes
 
 - Arcjet — prevents SQL injection, cross-site scripting, rate-limiting, and other attacks.
+
+## Better Auth
+
+Generate secret with `npx @better-auth/cli@latest secret`
+
+## Forget Postman
+
+Just use (https://httpie.io/app)[https://httpie.io/app] instead
