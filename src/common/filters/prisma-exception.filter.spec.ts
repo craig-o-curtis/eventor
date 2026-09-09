@@ -34,9 +34,7 @@ describe("PrismaExceptionFilter", () => {
     filter.catch(exception, host);
 
     expect(status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
-    expect(json).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: HttpStatus.CONFLICT }),
-    );
+    expect(json).toHaveBeenCalledWith(expect.objectContaining({ statusCode: HttpStatus.CONFLICT }));
   });
 
   it("falls back to 500 for an unrecognized error", () => {
